@@ -1,0 +1,16 @@
+{
+    "name": "ector/release_downloader",
+    "description": "Ector modules download manager",
+    "autoload": {
+        "psr-4": {
+            "Ector\\ReleaseDownloader\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Francesco Mineo",
+            "email": "francymin@gmail.com"
+        }
+    ],
+    "require": {}
+}
