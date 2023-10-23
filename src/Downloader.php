@@ -4,6 +4,8 @@ namespace Ector\ReleaseDownloader;
 
 class Downloader
 {
+    const API_URL = "https://api.github.com/";
+
     private $repositoryOwner;
     private $repositoryName;
     private $accessToken;
@@ -32,7 +34,7 @@ class Downloader
 
     private function getLatestRelease()
     {
-        $url = "https://api.github.com/repos/{$this->repositoryOwner}/{$this->repositoryName}/releases/latest";
+        $url = self::API_URL . "repos/{$this->repositoryOwner}/{$this->repositoryName}/releases/latest";
 
         $options = [
             'http' => [
@@ -69,31 +71,91 @@ class Downloader
     private function getLatestReleaseAssetsDownloadUrl()
     {
         return $this->getLatestReleaseAssets()["browser_download_url"];
+        // $assetId = $this->getLatestReleaseAssetsId();
+        // return self::API_URL."repos/{$this->repositoryOwner}/{$this->repositoryName}/releases/assets/{$assetId}";
+    }
+
+    private function downloadFileZip($url)
+    {
+        // $headers = [
+        //     "Accept: application/octet-stream",
+        //     "User-Agent: EctorReleaseDownloader",
+        //     "Authorization: Bearer {$this->accessToken}",
+        // ];
+
+        // $options = [
+        //     'http' => [
+        //         'header' => implode("\r\n", $headers),
+        //     ],
+        // ];
+
+        // $context = stream_context_create($options);
+        // return file_get_contents($url, false, $context);
+
+
+
+
+        // Inizializza una risorsa cURL
+        $ch = curl_init();
+
+        // Imposta l'URL del file ZIP da scaricare
+        curl_setopt($ch, CURLOPT_URL, $url);
+
+        // Imposta l'opzione CURLOPT_RETURNTRANSFER per ottenere il contenuto del file
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+        // Aggiungi user agent
+        $userAgent = 'EctorReleaseDownloader'; // Sostituisci con il tuo User-Agent desiderato
+        curl_setopt($ch, CURLOPT_USERAGENT, $userAgent);
+    
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Accept: application/octet-stream'));
+
+
+        // Aggiungi un'intestazione Authorization
+        $authorizationHeader = 'Bearer '.$this->accessToken; // Sostituisci con il token di autorizzazione desiderato
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: ' . $authorizationHeader));
+    
+
+        // Esegue la richiesta cURL
+        $zipFileContents = curl_exec($ch);
+
+        // Verifica se c'è stato un errore durante la richiesta cURL
+        if (curl_errno($ch)) {
+            echo 'Errore durante il download del file ZIP: ' . curl_error($ch);
+            exit;
+        }
+
+        // Chiude la risorsa cURL
+        curl_close($ch);
+        
+        return $zipFileContents;
     }
 
     private function downloadFile($url)
     {
+
         $options = [
             'http' => [
                 'header' => implode("\r\n", $this->commonHeaders),
             ],
         ];
-        
+
         $context = stream_context_create($options);
         return file_get_contents($url, false, $context);
     }
 
-    private function saveFile($name, $content) {
-        file_put_contents($name . ".zip", $content);
+    private function saveFile($name, $content)
+    {
+        file_put_contents($name, $content);
     }
 
-    // TODO: downloadLatestRelease() funziona, downloadLatestReleaseAssets() no...
     public function downloadLatestReleaseAssets()
     {
-        $zipContents = $this->downloadFile($this->getLatestReleaseAssetsDownloadUrl());
+        $zipContents = $this->downloadFileZip($this->getLatestReleaseAssetsDownloadUrl());
 
         if ($zipContents) {
-            $this->saveFile($this->getLatestReleaseAssetsName() . ".zip", $zipContents);
+            var_dump($zipContents);
+            $this->saveFile($this->getLatestReleaseAssetsName(), $zipContents);
             return true;
         } else {
             throw new \Exception("Unable to download zip file.");
@@ -106,11 +168,18 @@ class Downloader
         $zipContents = $this->downloadFile($zipUrl);
 
         if ($zipContents) {
-            $this->saveFile("latest_release", $zipContents);
+            $this->saveFile("latest_release.zip", $zipContents);
             echo "Zip file downloaded successfully.";
         } else {
             throw new \Exception("Unable to download zip file.");
         }
     }
-
 }
+
+// Esempio di utilizzo
+$repoOwner = "buggyzap";
+$repoName = "ector";
+$accessToken = "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";
+
+$downloader = new Downloader($repoOwner, $repoName, $accessToken);
+$downloader->downloadLatestReleaseAssets();
