@@ -1,5 +1,5 @@
 {
-    "name": "ector/release_downloader",
+    "name": "ector/release-downloader",
     "description": "Ector modules download manager",
     "autoload": {
         "psr-4": {
