@@ -71,12 +71,4 @@ class Downloader {
 
 }
 
-// Esempio di utilizzo
-$repoOwner = "buggyzapa";
-$repoName = "ector";
-$accessToken = "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";
-
-$downloader = new Downloader($repoOwner, $repoName, $accessToken);
-$downloader->downloadLatestRelease();
-
 ?>
