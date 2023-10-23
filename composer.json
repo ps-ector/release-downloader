@@ -8,9 +8,14 @@
     },
     "authors": [
         {
-            "name": "Francesco Mineo",
-            "email": "francymin@gmail.com"
+            "name": "DGCAL SRL",
+            "email": "f.mineo@dgcal.it",
+            "role": "Developer"
         }
     ],
-    "require": {}
+    "require": {
+        "php": "^8.1"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }
