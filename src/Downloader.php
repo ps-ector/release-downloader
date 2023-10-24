@@ -15,6 +15,8 @@ class Downloader
 
     public function __construct($repositoryOwner, $repositoryName, $accessToken = null)
     {
+        // TODO: CHECK: This class is intended to be used on an PrestaShop instance only
+
         if (!$repositoryOwner || !$repositoryName) {
             throw new \Exception("Missing repository owner or repository name.");
         }
@@ -29,13 +31,13 @@ class Downloader
     /**
      * Public Methods
      */
-    public function downloadLatestReleaseAssets()
+    public function downloadLatestReleaseAsset()
     {
-        $zipUrl = $this->getLatestReleaseAssetsDownloadUrl();
+        $zipUrl = $this->getLatestReleaseAssetDownloadUrl();
         $zipContents = $this->downloadFileZip($zipUrl);
 
         if ($zipContents) {
-            $this->saveFile($this->getLatestReleaseAssetsName(), $zipContents);
+            $this->saveFile($this->getLatestReleaseAssetName(), $zipContents);
             return true;
         } else {
             throw new \Exception("Unable to download zip file.");
@@ -48,7 +50,7 @@ class Downloader
         $zipContents = $this->downloadFile($zipUrl);
 
         if ($zipContents) {
-            $this->saveFile("latest_release.zip", $zipContents);
+            $this->saveFile("latest_release-{$this->getLatestReleaseVersion()}.zip", $zipContents);
         } else {
             throw new \Exception("Unable to download zip file.");
         }
@@ -59,7 +61,9 @@ class Downloader
         return $this->latestRelease["tag_name"];
     }
 
+    public function getInstalledVersion() {
 
+    }
 
     /**
      * Private Methods
@@ -90,25 +94,25 @@ class Downloader
         }
     }
 
-    private function getLatestReleaseAssets()
+    private function getLatestReleaseAsset()
     {
         return $this->latestRelease["assets"][0];
     }
 
-    private function getLatestReleaseAssetsId()
+    private function getLatestReleaseAssetId()
     {
-        return $this->getLatestReleaseAssets()["id"];
+        return $this->getLatestReleaseAsset()["id"];
     }
 
-    private function getLatestReleaseAssetsName()
+    private function getLatestReleaseAssetName()
     {
-        return $this->getLatestReleaseAssets()["name"];
+        return $this->getLatestReleaseAsset()["name"];
     }
 
-    private function getLatestReleaseAssetsDownloadUrl()
+    private function getLatestReleaseAssetDownloadUrl()
     {
-        // return $this->getLatestReleaseAssets()["browser_download_url"];
-        $assetId = $this->getLatestReleaseAssetsId();
+        // return $this->getLatestReleaseAsset()["browser_download_url"];
+        $assetId = $this->getLatestReleaseAssetId();
         return self::API_URL . "repos/{$this->repositoryOwner}/{$this->repositoryName}/releases/assets/{$assetId}";
     }
 
@@ -118,7 +122,6 @@ class Downloader
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_VERBOSE, true);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
             'Accept: application/octet-stream',
