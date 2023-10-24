@@ -2,7 +2,7 @@
 
 namespace Ector\ReleaseDownloader;
 
-use \PrestaShop\PrestaShop\Core\Module\ModuleManagerBuilder;
+use \PrestaShop\PrestaShop\Core\Addon\Module\ModuleManagerBuilder;
 
 class Downloader
 {
