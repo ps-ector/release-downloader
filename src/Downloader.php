@@ -57,7 +57,7 @@ class Downloader
 
     public function getLatestReleaseVersion(): string
     {
-        return $this->latestRelease["tag_name"];
+        return "v".$this->latestRelease["tag_name"];
     }
 
     /**
