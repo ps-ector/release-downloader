@@ -85,6 +85,10 @@ class Downloader
      * Private Methods
      */
 
+    public function getModules() {
+        return \Module::getModules();
+    }
+
     private function getLatestRelease()
     {
         $url = self::API_URL . "repos/{$this->repositoryOwner}/{$this->repositoryName}/releases/latest";
