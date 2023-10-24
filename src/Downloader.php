@@ -63,7 +63,13 @@ class Downloader
         return $this->latestRelease["tag_name"];
     }
 
-    public function getInstalledVersion() {
+    /**
+     * Restituisce la versione del modulo installato basandosi sul nome del repository.
+     *
+     * @return string|null La versione del modulo se trovato e installato, altrimenti null.
+     */
+    public function getInstalledVersion(): string|null
+    {
         $moduleName = $this->repositoryName;
 
         foreach ($this->getModules() as $module) {
@@ -71,7 +77,7 @@ class Downloader
                 return $module['version'];
             }
         }
-        
+
         return null;
     }
 
@@ -79,7 +85,8 @@ class Downloader
      * Private Methods
      */
 
-    private function getModules() {
+    private function getModules()
+    {
         return \Module::getModulesInstalled();
     }
 
