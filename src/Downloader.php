@@ -64,28 +64,22 @@ class Downloader
     }
 
     public function getInstalledVersion() {
-        try {
-            $moduleName = $this->repositoryName;
+        $moduleName = $this->repositoryName;
 
-            $isInstalled = \Module::isInstalled($moduleName);
-
-            if ($isInstalled) {
-                $moduleVersion = \Module::getVersion($moduleName);
-                return "Il modulo '$moduleName' è installato con la versione $moduleVersion.";
-            } else {
-                return "Il modulo '$moduleName' non è installato.";
+        foreach ($this->getModules() as $module) {
+            if (isset($module['name']) && $module['name'] === $moduleName) {
+                return $module['version'];
             }
-        } catch (\Exception $e) {
-            return $e->getMessage();
         }
         
+        return null;
     }
 
     /**
      * Private Methods
      */
 
-    public function getModules() {
+    private function getModules() {
         return \Module::getModulesInstalled();
     }
 
