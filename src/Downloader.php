@@ -67,10 +67,10 @@ class Downloader
         try {
             $moduleName = $this->repositoryName;
 
-            $isInstalled = Module::isInstalled($moduleName);
+            $isInstalled = \Module::isInstalled($moduleName);
 
             if ($isInstalled) {
-                $moduleVersion = Module::getVersion($moduleName);
+                $moduleVersion = \Module::getVersion($moduleName);
                 return "Il modulo '$moduleName' è installato con la versione $moduleVersion.";
             } else {
                 return "Il modulo '$moduleName' non è installato.";
