@@ -2,8 +2,6 @@
 
 namespace Ector\ReleaseDownloader;
 
-use \PrestaShop\PrestaShop\Core\Addon\Module\ModuleManagerBuilder;
-
 class Downloader
 {
     const API_URL = "https://api.github.com/";
@@ -67,12 +65,12 @@ class Downloader
 
     public function getInstalledVersion() {
         try {
-            $moduleManager = ModuleManagerBuilder::getInstance();
-
             $moduleName = $this->repositoryName;
 
-            if ($moduleManager->isInstalled($moduleName)) {
-                $moduleVersion = $moduleManager->getModuleVersion($moduleName);
+            $isInstalled = Module::isInstalled($moduleName);
+
+            if ($isInstalled) {
+                $moduleVersion = Module::getVersion($moduleName);
                 return "Il modulo '$moduleName' è installato con la versione $moduleVersion.";
             } else {
                 return "Il modulo '$moduleName' non è installato.";
