@@ -2,6 +2,8 @@
 
 namespace Ector\ReleaseDownloader;
 
+use \PrestaShop\PrestaShop\Core\Module\ModuleManagerBuilder;
+
 class Downloader
 {
     const API_URL = "https://api.github.com/";
@@ -15,7 +17,10 @@ class Downloader
 
     public function __construct(string $repositoryOwner, string $repositoryName, ?string $accessToken = null)
     {
-        // TODO: CHECK: This class is intended to be used on an PrestaShop instance only
+
+        if (!defined('_PS_VERSION_')) {
+            throw new \Exception("This class is intended to be used in the PrestaShop context only.");
+        }
 
         if (empty($repositoryOwner) || empty($repositoryName)) {
             throw new \InvalidArgumentException("Missing repository owner or repository name.");
@@ -58,6 +63,24 @@ class Downloader
     public function getLatestReleaseVersion(): string
     {
         return $this->latestRelease["tag_name"];
+    }
+
+    public function getInstalledVersion() {
+        try {
+            $moduleManager = ModuleManagerBuilder::getInstance();
+
+            $moduleName = $this->repositoryName;
+
+            if ($moduleManager->isInstalled($moduleName)) {
+                $moduleVersion = $moduleManager->getModuleVersion($moduleName);
+                return "Il modulo '$moduleName' è installato con la versione $moduleVersion.";
+            } else {
+                return "Il modulo '$moduleName' non è installato.";
+            }
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+        
     }
 
     /**
