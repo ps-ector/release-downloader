@@ -13,12 +13,12 @@ class Downloader
     private $accessToken;
     private $latestRelease;
 
-    public function __construct($repositoryOwner, $repositoryName, $accessToken = null)
+    public function __construct(string $repositoryOwner, string $repositoryName, ?string $accessToken = null)
     {
         // TODO: CHECK: This class is intended to be used on an PrestaShop instance only
 
-        if (!$repositoryOwner || !$repositoryName) {
-            throw new \Exception("Missing repository owner or repository name.");
+        if (empty($repositoryOwner) || empty($repositoryName)) {
+            throw new \InvalidArgumentException("Missing repository owner or repository name.");
         }
 
         $this->repositoryOwner = $repositoryOwner;
@@ -31,20 +31,19 @@ class Downloader
     /**
      * Public Methods
      */
-    public function downloadLatestReleaseAsset()
+    public function downloadLatestReleaseAsset(): void
     {
         $zipUrl = $this->getLatestReleaseAssetDownloadUrl();
         $zipContents = $this->downloadFileZip($zipUrl);
 
         if ($zipContents) {
             $this->saveFile($this->getLatestReleaseAssetName(), $zipContents);
-            return true;
         } else {
-            throw new \Exception("Unable to download zip file.");
+            throw new \RuntimeException("Unable to download zip file.");
         }
     }
 
-    public function downloadLatestRelease()
+    public function downloadLatestRelease(): void
     {
         $zipUrl = $this->latestRelease['zipball_url'];
         $zipContents = $this->downloadFile($zipUrl);
@@ -52,45 +51,38 @@ class Downloader
         if ($zipContents) {
             $this->saveFile("latest_release-{$this->getLatestReleaseVersion()}.zip", $zipContents);
         } else {
-            throw new \Exception("Unable to download zip file.");
+            throw new \RuntimeException("Unable to download zip file.");
         }
     }
 
-    public function getLatestReleaseVersion()
+    public function getLatestReleaseVersion(): string
     {
         return $this->latestRelease["tag_name"];
-    }
-
-    public function getInstalledVersion() {
-
     }
 
     /**
      * Private Methods
      */
+
     private function getLatestRelease()
     {
         $url = self::API_URL . "repos/{$this->repositoryOwner}/{$this->repositoryName}/releases/latest";
 
         $options = [
-            'http' => [
-                'header' => implode("\r\n", [
-                    'Accept: vnd.github+json',
-                    'User-Agent: ' . self::USER_AGENT,
-                    'Authorization: Bearer ' . $this->accessToken,
-                    'X-GitHub-Api-Version: ' . self::API_VERSION,
-                ]),
+            CURLOPT_HTTPHEADER => [
+                'Accept: vnd.github+json',
+                'User-Agent: ' . self::USER_AGENT,
+                'Authorization: Bearer ' . $this->accessToken,
+                'X-GitHub-Api-Version: ' . self::API_VERSION,
             ],
         ];
 
-        $context = stream_context_create($options);
-
-        $releaseInfo = @file_get_contents($url, false, $context);
+        $releaseInfo = $this->performCurlRequest($url, $options);
 
         if ($releaseInfo) {
             return json_decode($releaseInfo, true);
         } else {
-            throw new \Exception("No releases found for the specified repository. Please also check the GitHub Token for private repositories.");
+            throw new \RuntimeException("No releases found for the specified repository. Please also check the GitHub Token for private repositories.");
         }
     }
 
@@ -111,45 +103,50 @@ class Downloader
 
     private function getLatestReleaseAssetDownloadUrl()
     {
-        // return $this->getLatestReleaseAsset()["browser_download_url"];
         $assetId = $this->getLatestReleaseAssetId();
         return self::API_URL . "repos/{$this->repositoryOwner}/{$this->repositoryName}/releases/assets/{$assetId}";
     }
 
     private function downloadFileZip($url)
     {
+        $options = [
+            CURLOPT_HTTPHEADER => [
+                'Accept: application/octet-stream',
+                'User-Agent: ' . self::USER_AGENT,
+                'Authorization: Bearer ' . $this->accessToken,
+                'X-GitHub-Api-Version: ' . self::API_VERSION,
+            ],
+        ];
 
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Accept: application/octet-stream',
-            'User-Agent: ' . self::USER_AGENT,
-            'Authorization: Bearer ' . $this->accessToken,
-            'X-GitHub-Api-Version: ' . self::API_VERSION,
-        ]);
-        $zipFileContents = curl_exec($ch);
-        curl_close($ch);
-        return $zipFileContents;
+        return $this->performCurlRequest($url, $options);
     }
 
     private function downloadFile($url)
     {
         $options = [
-            'http' => [
-                'header' => implode("\r\n", [
-                    'Accept: vnd.github+json',
-                    'Authorization: Bearer ' . $this->accessToken,
-                    'User-Agent: ' . self::USER_AGENT,
-                    'X-GitHub-Api-Version: ' . self::API_VERSION,
-                ]),
+            CURLOPT_HTTPHEADER => [
+                'Accept: vnd.github+json',
+                'Authorization: Bearer ' . $this->accessToken,
+                'User-Agent: ' . self::USER_AGENT,
+                'X-GitHub-Api-Version: ' . self::API_VERSION,
             ],
         ];
 
-        $context = stream_context_create($options);
-        $content = file_get_contents($url, false, $context);
-        return $content;
+        return $this->performCurlRequest($url, $options);
+    }
+
+    private function performCurlRequest($url, $options)
+    {
+        $ch = curl_init();
+        curl_setopt_array($ch, $options);
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+        $result = curl_exec($ch);
+        curl_close($ch);
+
+        return $result;
     }
 
     private function saveFile($name, $content)
