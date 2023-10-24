@@ -86,7 +86,7 @@ class Downloader
      */
 
     public function getModules() {
-        return \Module::getModules();
+        return \Module::getModulesInstalled();
     }
 
     private function getLatestRelease()
