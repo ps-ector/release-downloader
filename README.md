@@ -45,3 +45,8 @@ $downloader->getInstalledVersion("some_module_name");
 // or 
 $downloader->getInstalledVersion(); // Implicit "repo_name"
 ```
+
+### Get the list of all active Ector modules from Ector Backend
+```php
+$downloader->getActiveEctorModules();
+```
