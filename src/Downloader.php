@@ -10,10 +10,10 @@ class Downloader
     const GITHUB_API_VERSION = "2022-11-28";
     const USER_AGENT = "EctorReleaseDownloader";
     
-    private $repositoryOwner;
-    private $repositoryName;
-    private $accessToken;
-    private $latestRelease;
+    private string $repositoryOwner;
+    private string $repositoryName;
+    private string $accessToken;
+    private array $latestRelease;
 
     public function __construct(string $repositoryOwner, string $repositoryName, ?string $accessToken = null)
     {
@@ -87,8 +87,9 @@ class Downloader
      * Private Methods
      */
 
-    private function getModules()
+    private function getModules(): array
     {
+        // @phpstan-ignore-next-line
         return \Module::getModulesInstalled();
     }
 
@@ -167,6 +168,7 @@ class Downloader
 
     private function saveFile($name, $content)
     {
+        // @phpstan-ignore-next-line
         file_put_contents(_PS_MODULE_DIR_ . $name, $content);
     }
 
