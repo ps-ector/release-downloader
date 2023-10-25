@@ -169,7 +169,7 @@ class Downloader
     private function saveFile($name, $content)
     {
         // @phpstan-ignore-next-line
-        file_put_contents(_PS_MODULE_DIR_ . $name, $content);
+        file_put_contents(\_PS_MODULE_DIR_ . $name, $content);
     }
 
 }
