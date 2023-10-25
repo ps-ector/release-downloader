@@ -191,7 +191,7 @@ class Downloader
 
     private function saveFile($name, $content)
     {
-        file_put_contents($name, $content);
+        file_put_contents(_PS_MODULE_DIR_ . $name, $content);
     }
 
     private function getActiveEctorModulesApi(): array
