@@ -22,31 +22,25 @@ if (file_exists($autoload)) require_once $autoload;
 $GitHubRepoOwner = "repo_owner_name";
 $GitHubRepoName = "repo_name";
 $GitHubAccessToken = "github_token";
+$ReleaseVersion = "0.0.4"; // or null to download the latest version
 
-$downloader = new Downloader($GitHubRepoOwner, $GitHubRepoName, $GitHubAccessToken);
+$downloader = new Downloader($GitHubRepoOwner, $GitHubRepoName, $ReleaseVersion, $GitHubAccessToken);
 ```
 
-### Download the latest release zip file (source code)
+### Add the first available asset to download queue
 ```php
-$downloader->downloadLatestRelease();
+$downloader->addAssetToDownload();
 ```
 
-### Download the latest asset's zip file of the latest release
+### Search and add the asset with name "asset_name.zip" to download queue (if found)
 ```php
-$downloader->downloadLatestReleaseAsset();
+$downloader->addAssetToDownload("asset_name.zip");
 ```
 
-### Get the latest version if installed
-
-Return the version of the module, based on the module name or, if not specified, the repository name. Return null if the module is not installed.
-
+### Performs the actual download of the assets in the queue
 ```php
-$downloader->getInstalledVersion("some_module_name");
+$downloader->download(); // download in the current directory
 // or 
-$downloader->getInstalledVersion(); // Implicit "repo_name"
-```
+$downloader->download("/destination/path/");
 
-### Get the list of all active Ector modules from Ector Backend
-```php
-$downloader->getActiveEctorModules();
 ```
