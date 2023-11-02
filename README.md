@@ -44,3 +44,11 @@ $downloader->download(); // download in the current directory
 $downloader->download("/destination/path/");
 
 ```
+
+### Extract downloaded assets
+```php
+$downloader->extract(); // extract in same directory where assets are downloaded
+// or 
+$downloader->extract("/destination/path/");
+
+```
