@@ -11,6 +11,8 @@ class Downloader
     private GitHubRepository $repository;
     private Release $release;
     private array $toDownload = [];
+    private string $downloadPath = "./";
+    private array $downloaded = [];
 
     public function __construct(string $repositoryOwner, string $repositoryName, ?string $version = null, ?string $accessToken = null)
     {
@@ -21,6 +23,11 @@ class Downloader
         } else {
             $this->release = $this->repository->getLatestRelease();
         }
+    }
+
+    public function getAssets(): array
+    {
+        return $this->release->getAssets();
     }
 
     public function addAssetToDownload(?string $assetName = null): void
@@ -45,22 +52,46 @@ class Downloader
     public function download(?string $path = "./"): void
     {
         if (empty($this->toDownload)) {
-            throw new \Exception("The download list is empty.");
+            throw new \Exception("The download list is empty. Please add assets to download list before downloading.");
         }
+
+        $this->downloadPath = $path;
 
         foreach ($this->toDownload as $asset) {
             $zipContents = $asset->download();
 
             if ($zipContents) {
-                $asset->save($path);
+                $asset->save($this->downloadPath);
+                $this->downloaded[] = $asset;
             } else {
                 throw new \RuntimeException("Unable to download zip file {$asset->getName()}.");
             }
         }
     }
 
-    public function getAssets(): array
+    public function extract(?string $path = null): void
     {
-        return $this->release->getAssets();
+        if (empty($this->downloaded)) {
+            throw new \Exception("The downloaded list is empty. Please download assets before extracting.");
+        }
+
+        $extactPath = $path ?? $this->downloadPath;
+
+        foreach ($this->downloaded as $asset) {
+            $zipPath = $this->downloadPath . $asset->getName();
+
+            if (!file_exists($zipPath)) {
+                throw new \RuntimeException("Zip file {$asset->getName()} does not exist in the download path.");
+            }
+
+            $zip = new \ZipArchive();
+
+            if ($zip->open($zipPath) === true) {
+                $zip->extractTo("../".dirname($extactPath));
+                $zip->close();
+            } else {
+                throw new \RuntimeException("Unable to extract zip file {$asset->getName()}.");
+            }
+        }
     }
 }
