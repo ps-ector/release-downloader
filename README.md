@@ -47,7 +47,7 @@ $downloader->download("/destination/path/");
 
 ### Extract downloaded assets
 ```php
-$downloader->extract(); // extract in same directory where assets are downloaded
+$downloader->extract(); // extract in the same directory where assets are downloaded
 // or 
 $downloader->extract("/destination/path/");
 
