@@ -75,7 +75,8 @@ class Downloader
             throw new \Exception("The downloaded list is empty. Please download assets before extracting.");
         }
 
-        $extactPath = $path ?? $this->downloadPath;
+        $extractPath = $path ?? $this->downloadPath;
+        $extractPath = dirname($extractPath);
 
         foreach ($this->downloaded as $asset) {
             $zipPath = $this->downloadPath . $asset->getName();
@@ -87,10 +88,13 @@ class Downloader
             $zip = new \ZipArchive();
 
             if ($zip->open($zipPath) === true) {
-                $zip->extractTo("../".dirname($extactPath));
-                $zip->close();
+                if ($zip->extractTo(dirname($extractPath))) {
+                    $zip->close();
+                } else {
+                    throw new \RuntimeException("Unable to extract zip file {$asset->getName()} to {$extractPath}. Probably permissions issue.");
+                }
             } else {
-                throw new \RuntimeException("Unable to extract zip file {$asset->getName()}.");
+                throw new \RuntimeException("Unable to locate zip file {$asset->getName()}.");
             }
         }
     }
