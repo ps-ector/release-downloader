@@ -1,6 +1,6 @@
 # Ector Release Downloader
 
-Composer dependency to check and download the latest version of an Ector module.
+Composer dependency to download assets from a GitHub repository.
 
 ## Installation
 
