@@ -1,5 +1,8 @@
 # Ector Release Downloader
 
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/ector/release-downloader.svg?style=flat-square)](https://packagist.org/packages/ector/release-downloader)
+[![Total Downloads](https://img.shields.io/packagist/dt/ector/release-downloader.svg?style=flat-square)](https://packagist.org/packages/ector/release-downloader)
+
 Composer dependency to download assets from a GitHub repository.
 
 ## Installation
