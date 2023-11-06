@@ -5,14 +5,15 @@ class Release
 {
     // private array $data;
     private array $assets = [];
+    private ?string $accessToken;
 
-    public function __construct(array $data)
+    public function __construct(array $data, ?string $accessToken=null)
     {
-        // $this->data = $data;
+        $this->accessToken = $accessToken;
 
         if (!empty($data['assets']) && is_array($data['assets'])) {
             foreach ($data['assets'] as $asset) {
-                $this->assets[] = new ReleaseAsset($asset);
+                $this->assets[] = new ReleaseAsset($asset, $this->accessToken);
             }
         }
     }
