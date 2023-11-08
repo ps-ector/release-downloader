@@ -32,20 +32,16 @@ class Downloader
 
     public function addAssetToDownload(?string $assetName = null): void
     {
-        if ($this->release) {
-            if ($assetName) {
-                $asset = $this->release->getAssetByName($assetName);
-            } else {
-                $asset = $this->release->getDefaultAsset();
-            }
-
-            if ($asset) {
-                $this->toDownload[] = $asset;
-            } else {
-                throw new \Exception("No asset available.");
-            }
+        if ($assetName) {
+            $asset = $this->release->getAssetByName($assetName);
         } else {
-            throw new \Exception("No release available. Please specify a release before adding assets to download.");
+            $asset = $this->release->getDefaultAsset();
+        }
+
+        if ($asset) {
+            $this->toDownload[] = $asset;
+        } else {
+            throw new \Exception("No asset available.");
         }
     }
 

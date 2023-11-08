@@ -3,3 +3,4 @@ vendor/
 .env
 dev/
 .phpunit.cache/
+.vscode/
