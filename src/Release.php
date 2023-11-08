@@ -3,9 +3,10 @@ namespace Ector\ReleaseDownloader;
 
 class Release
 {
-    // private array $data;
-    private array $assets = [];
-    private ?string $accessToken;
+    // @var array $assets
+    private $assets = [];
+    // @var null|string $accessToken
+    private $accessToken;
 
     public function __construct(array $data, ?string $accessToken=null)
     {

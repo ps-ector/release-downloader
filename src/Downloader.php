@@ -8,11 +8,16 @@ class Downloader
     const GITHUB_API_VERSION = "2022-11-28";
     const USER_AGENT = "EctorReleaseDownloader";
 
-    private GitHubRepository $repository;
-    private Release $release;
-    private array $toDownload = [];
-    private string $downloadPath = "./";
-    private array $downloaded = [];
+    // @var \Ector\ReleaseDownloader\GitHubRepository
+    private $repository;
+    // @var \Ector\ReleaseDownloader\Release
+    private $release;
+    // @var array
+    private $toDownload = [];
+    // @var string
+    private $downloadPath = "./";
+    // @var array
+    private $downloaded = [];
 
     public function __construct(string $repositoryOwner, string $repositoryName, ?string $version = null, ?string $accessToken = null)
     {

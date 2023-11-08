@@ -6,9 +6,12 @@ use Ector\ReleaseDownloader\Helper\DownloaderHelper;
 
 class GitHubRepository
 {
-    private string $owner;
-    private string $name;
-    private ?string $accessToken;
+    // @var string $owner
+    private $owner;
+    // @var string $name
+    private $name;
+    // @var null|string $accessToken
+    private $accessToken;
 
     public function __construct(string $owner, string $name, ?string $accessToken = null)
     {

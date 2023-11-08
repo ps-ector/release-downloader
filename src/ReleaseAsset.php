@@ -6,9 +6,12 @@ use Ector\ReleaseDownloader\Helper\DownloaderHelper;
 
 class ReleaseAsset
 {
-    private string $name;
-    private string $downloadUrl;
-    private ?string $accessToken;
+    // @var string $name
+    private $name;
+    // @var string $downloadUrl
+    private $downloadUrl;
+    // @var null|string $accessToken
+    private $accessToken;
 
     public function __construct(array $data, ?string $accessToken = null)
     {
