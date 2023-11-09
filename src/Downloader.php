@@ -30,6 +30,12 @@ class Downloader
         }
     }
 
+    public function getLatestTagName() : string
+    {
+        $latestRelease = $this->repository->getLatestRelease();
+        return $latestRelease->getTagName();
+    }
+
     public function getAssets(): array
     {
         return $this->release->getAssets();

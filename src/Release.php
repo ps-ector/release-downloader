@@ -3,6 +3,8 @@ namespace Ector\ReleaseDownloader;
 
 class Release
 {
+    // @var array $data
+    private $data = [];
     // @var array $assets
     private $assets = [];
     // @var null|string $accessToken
@@ -11,6 +13,7 @@ class Release
     public function __construct(array $data, ?string $accessToken=null)
     {
         $this->accessToken = $accessToken;
+        $this->data = $data;
 
         if (!empty($data['assets']) && is_array($data['assets'])) {
             foreach ($data['assets'] as $asset) {
@@ -37,5 +40,10 @@ class Release
     public function getAssets(): array
     {
         return $this->assets;
+    }
+
+    public function getTagName(): string
+    {
+        return $this->data['tag_name'];
     }
 }

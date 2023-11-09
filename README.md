@@ -30,6 +30,11 @@ $ReleaseVersion = "0.0.4"; // or null to download the latest version
 $downloader = new Downloader($GitHubRepoOwner, $GitHubRepoName, $ReleaseVersion, $GitHubAccessToken);
 ```
 
+### Get the latest version Tag Name
+```php
+$downloader->getLatestTagName();
+```
+
 ### Add the first available asset to download queue
 ```php
 $downloader->addAssetToDownload();
