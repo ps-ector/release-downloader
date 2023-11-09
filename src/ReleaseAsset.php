@@ -17,7 +17,7 @@ class ReleaseAsset
     {
         $this->accessToken = $accessToken;
         $this->name = $data['name'];
-        $this->downloadUrl = $data['browser_download_url'];
+        $this->downloadUrl = $data['url'];
     }
 
     public function getName(): string

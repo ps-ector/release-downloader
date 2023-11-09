@@ -30,6 +30,10 @@ class Downloader
         }
     }
 
+    public function getRelease() {
+        return $this->release;
+    }
+
     public function getLatestTagName() : string
     {
         $latestRelease = $this->repository->getLatestRelease();
