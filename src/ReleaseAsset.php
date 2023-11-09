@@ -54,4 +54,9 @@ class ReleaseAsset
     {
         file_put_contents($path . $this->name, $this->download());
     }
+
+    public function delete(string $path): void
+    {
+        unlink($path . $this->name);
+    }
 }
