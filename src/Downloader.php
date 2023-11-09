@@ -110,14 +110,14 @@ class Downloader
         }
     }
 
-    public function remove(): void {
+    public function delete(): void {
         foreach ($this->downloaded as $asset) {
             $asset->delete($this->downloadPath);
         }
     }
 
-    public function extractAndRemove(?string $path = null): void {
+    public function extractAndDelete(?string $path = null): void {
         $this->extract($path);
-        $this->remove();
+        $this->delete();
     }
 }

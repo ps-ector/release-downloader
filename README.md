@@ -60,3 +60,17 @@ $downloader->extract(); // extract in the same directory where assets are downlo
 $downloader->extract("/destination/path/");
 
 ```
+
+### Delete downloaded assets
+```php
+$downloader->delete();
+
+```
+
+### Extract and delete downloaded assets
+```php
+$downloader->extractAndDelete(); // extract in the same directory where assets are downloaded
+// or 
+$downloader->extractAndDelete("/destination/path/");
+
+```
