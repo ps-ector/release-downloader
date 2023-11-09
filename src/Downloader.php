@@ -60,7 +60,7 @@ class Downloader
         }
     }
 
-    public function download(?string $path = "./"): void
+    public function download(string $path): void
     {
         if (empty($this->toDownload)) {
             throw new \Exception("The download list is empty. Please add assets to download list before downloading.");
@@ -87,7 +87,7 @@ class Downloader
         }
 
         $extractPath = $path ?? $this->downloadPath;
-        $extractPath = dirname($extractPath);
+        // $extractPath = dirname($extractPath);
 
         foreach ($this->downloaded as $asset) {
             $zipPath = $this->downloadPath . $asset->getName();
@@ -99,7 +99,7 @@ class Downloader
             $zip = new \ZipArchive();
 
             if ($zip->open($zipPath) === true) {
-                if ($zip->extractTo(dirname($extractPath))) {
+                if ($zip->extractTo($extractPath)) {
                     $zip->close();
                 } else {
                     throw new \RuntimeException("Unable to extract zip file {$asset->getName()} to {$extractPath}. Probably permissions issue.");
