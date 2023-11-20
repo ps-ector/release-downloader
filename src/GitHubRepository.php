@@ -57,6 +57,16 @@ class GitHubRepository
             throw new \RuntimeException("No releases found for the specified repository. Please also check the GitHub Token for private repositories.");
         }
 
-        return new Release(json_decode($response, true), $this->accessToken);
+        return new Release($this->name, json_decode($response, true), $this->accessToken);
+    }
+
+    public function getRepositoryName(): string
+    {
+        return $this->name;
+    }
+
+    public function getRepositoryOwner(): string
+    {
+        return $this->owner;
     }
 }

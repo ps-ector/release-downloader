@@ -40,6 +40,11 @@ $downloader->getLatestTagName();
 $downloader->addAssetToDownload();
 ```
 
+### Add release source code to download queue
+```php
+$downloader->addSourceCodeToDownload();
+```
+
 ### Search and add the asset with name "asset_name.zip" to download queue (if found)
 ```php
 $downloader->addAssetToDownload("asset_name.zip");
@@ -48,7 +53,6 @@ $downloader->addAssetToDownload("asset_name.zip");
 ### Performs the actual download of the assets in the queue
 ```php
 $downloader->download("/destination/path/");
-
 ```
 
 ### Extract downloaded assets
@@ -56,19 +60,21 @@ $downloader->download("/destination/path/");
 $downloader->extract(); // extract in the same directory where assets are downloaded
 // or 
 $downloader->extract("/destination/path/");
-
+```
+**NOTE**: This method will automatically overwrite the destination path folder if already exists.
+It is possible to make a backup of the previuos folder.
+```php
+$downloader->extract("/destination/path/", true);
 ```
 
-### Delete downloaded assets
+### Delete downloaded zip files
 ```php
 $downloader->delete();
-
 ```
 
-### Extract and delete downloaded assets
+### Extract and delete downloaded zip files
 ```php
 $downloader->extractAndDelete(); // extract in the same directory where assets are downloaded
 // or 
-$downloader->extractAndDelete("/destination/path/");
-
+$downloader->extractAndDelete("/destination/path/", true);
 ```

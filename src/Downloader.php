@@ -13,7 +13,7 @@ class Downloader
     // @var \Ector\ReleaseDownloader\Release
     private $release;
     // @var array
-    private $toDownload = [];
+    public $toDownload = [];
     // @var string
     private $downloadPath = "./";
     // @var array
@@ -63,7 +63,7 @@ class Downloader
     public function download(string $path): void
     {
         if (empty($this->toDownload)) {
-            throw new \Exception("The download list is empty. Please add assets to download list before downloading.");
+            throw new \Exception("The download list is empty. Please add a Downloadable Object to download list before downloading.");
         }
 
         $this->downloadPath = $path;
@@ -72,44 +72,63 @@ class Downloader
             throw new \Exception("The download path '{$this->downloadPath}' is not a directory.");
         }
 
-        foreach ($this->toDownload as $asset) {
-            $zipContents = $asset->download();
+        foreach ($this->toDownload as $downloadable) {
+
+            if (!$downloadable instanceof Downloadable) {
+                throw new \InvalidArgumentException("Invalid object in the download list. All objects must implement the Downloadable interface.");
+            }
+
+            $zipContents = $downloadable->download();
 
             if ($zipContents) {
-                $asset->save($this->downloadPath);
-                $this->downloaded[] = $asset;
+                $downloadable->save($this->downloadPath);
+                $this->downloaded[] = $downloadable;
             } else {
-                throw new \RuntimeException("Unable to download zip file {$asset->getName()}.");
+                throw new \RuntimeException("Unable to download zip file {$downloadable->getName()}.");
             }
         }
     }
 
-    public function extract(?string $path = null): void
+    public function extract(?string $path = null, ?bool $backup = false): void
     {
         if (empty($this->downloaded)) {
             throw new \Exception("The downloaded list is empty. Please download assets before extracting.");
         }
 
         $extractPath = $path ?? $this->downloadPath;
-        // $extractPath = dirname($extractPath);
 
-        foreach ($this->downloaded as $asset) {
-            $zipPath = $this->downloadPath . $asset->getName();
+        foreach ($this->downloaded as $downloadable) {
+            $zipPath = $this->downloadPath . $downloadable->getName();
 
             if (!file_exists($zipPath)) {
-                throw new \RuntimeException("Zip file {$asset->getName()} does not exist in the download path.");
+                throw new \RuntimeException("Zip file {$downloadable->getName()} does not exist in the download path.");
             }
 
             $zip = new \ZipArchive();
 
             if ($zip->open($zipPath) === true) {
+                $zipFolderName = trim($zip->getNameIndex(0), '/');
+                $destinationFolderName = $this->repository->getRepositoryName();
+                if (is_dir($extractPath . $destinationFolderName)) {
+                    // throw new \RuntimeException("Folder {$zipFolderName} already exists in {$extractPath}. Please delete it and try again.");
+                    $backupFolderName = $destinationFolderName . ".backup_" . date("Y-m-d_H-i-s");
+                    rename($extractPath . $destinationFolderName, $extractPath . $backupFolderName);
+                }
+
                 if ($zip->extractTo($extractPath)) {
                     $zip->close();
+                    rename($extractPath . $zipFolderName, $extractPath . $destinationFolderName);
+                    if (!$backup && isset($backupFolderName)) {
+                        $this->deleteDirectory($extractPath . $backupFolderName);
+                    }
                 } else {
-                    throw new \RuntimeException("Unable to extract zip file {$asset->getName()} to {$extractPath}. Probably permissions issue.");
+                    if (isset($backupFolderName)) {
+                        rename($extractPath . $backupFolderName, $extractPath . $zipFolderName);
+                    }
+                    throw new \RuntimeException("Unable to extract zip file {$downloadable->getName()} to {$extractPath}. Probably permissions issue.");
                 }
             } else {
-                throw new \RuntimeException("Unable to locate zip file {$asset->getName()}.");
+                throw new \RuntimeException("Unable to locate zip file {$downloadable->getName()}.");
             }
         }
     }
@@ -120,8 +139,36 @@ class Downloader
         }
     }
 
-    public function extractAndDelete(?string $path = null): void {
-        $this->extract($path);
+    public function extractAndDelete(?string $path = null, ?bool $backup = false): void {
+        $this->extract($path, $backup);
         $this->delete();
     }
+
+    public function addSourceCodeToDownload(): void
+    {
+        $this->toDownload[] = $this->release->getSourceCode();
+    }
+
+    private function deleteDirectory($dir) {
+        if (!file_exists($dir)) {
+            return true;
+        }
+    
+        if (!is_dir($dir)) {
+            return unlink($dir);
+        }
+    
+        foreach (scandir($dir) as $item) {
+            if ($item == '.' || $item == '..') {
+                continue;
+            }
+    
+            if (!$this->deleteDirectory($dir . DIRECTORY_SEPARATOR . $item)) {
+                return false;
+            }
+        }
+    
+        return rmdir($dir);
+    }
+
 }

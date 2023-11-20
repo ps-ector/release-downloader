@@ -9,8 +9,9 @@ class Release
     private $assets = [];
     // @var null|string $accessToken
     private $accessToken;
+    private $sourceCode;
 
-    public function __construct(array $data, ?string $accessToken=null)
+    public function __construct(string $repositoryName, array $data, ?string $accessToken=null)
     {
         $this->accessToken = $accessToken;
         $this->data = $data;
@@ -20,6 +21,9 @@ class Release
                 $this->assets[] = new ReleaseAsset($asset, $this->accessToken);
             }
         }
+        
+        $data['name'] = $repositoryName;
+        $this->sourceCode = new ReleaseSourceCode($data, $this->accessToken);
     }
 
     public function getAssetByName(string $name): ?ReleaseAsset
@@ -45,5 +49,10 @@ class Release
     public function getTagName(): string
     {
         return $this->data['tag_name'];
+    }
+
+    public function getSourceCode(): ReleaseSourceCode
+    {
+        return $this->sourceCode;
     }
 }

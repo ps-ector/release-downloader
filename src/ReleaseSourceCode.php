@@ -4,7 +4,7 @@ namespace Ector\ReleaseDownloader;
 
 use Ector\ReleaseDownloader\Helper\DownloaderHelper;
 
-class ReleaseAsset implements Downloadable
+class ReleaseSourceCode implements Downloadable
 {
     // @var string $name
     private $name;
@@ -16,8 +16,8 @@ class ReleaseAsset implements Downloadable
     public function __construct(array $data, ?string $accessToken = null)
     {
         $this->accessToken = $accessToken;
-        $this->name = $data['name'];
-        $this->downloadUrl = $data['url'];
+        $this->name = $data['name'].".zip";
+        $this->downloadUrl = $data['zipball_url'];
     }
 
     public function getName(): string
@@ -28,7 +28,7 @@ class ReleaseAsset implements Downloadable
     public function download(): ?string
     {
         $headers = [
-            'Accept: application/octet-stream',
+            'Accept: application/vnd.github+json',
             'User-Agent: ' . Downloader::USER_AGENT,
             'X-GitHub-Api-Version: ' . Downloader::GITHUB_API_VERSION,
         ];
