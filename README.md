@@ -47,8 +47,6 @@ $downloader->addAssetToDownload("asset_name.zip");
 
 ### Performs the actual download of the assets in the queue
 ```php
-$downloader->download(); // download in the current directory
-// or 
 $downloader->download("/destination/path/");
 
 ```
