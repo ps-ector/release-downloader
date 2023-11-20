@@ -68,6 +68,10 @@ class Downloader
 
         $this->downloadPath = $path;
 
+        if (!is_dir($this->downloadPath)) {
+            throw new \Exception("The download path '{$this->downloadPath}' is not a directory.");
+        }
+
         foreach ($this->toDownload as $asset) {
             $zipContents = $asset->download();
 
